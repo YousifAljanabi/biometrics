@@ -72,6 +72,20 @@ def perspective_warp(input_path, output_path):
         img.distort('perspective', tuple(args))
         img.save(filename=output_path)
 
+
+def ridge_erosion(input_path, output_path, severity=1, iterations=1):
+    """
+    1 is the lowest severity
+    """
+    img = cv2.imread(input_path)
+
+    kernel_size = 2 * severity + 1
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+
+    erosed_img = cv2.erode(img, kernel, iterations=iterations)
+    cv2.imwrite(output_path, erosed_img)
+
+        
 def apply_random_distortions(input_folder, output_folder, samples_per_image):
     os.makedirs(output_folder, exist_ok=True)
     distortions = [radial, stretch, rotate, translate, scale, affine_warp, perspective_warp]
