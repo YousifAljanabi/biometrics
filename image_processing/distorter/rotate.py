@@ -11,7 +11,7 @@ rotated_90_counterclockwise = cv2.rotate(image, cv2.ROTATE_90_COUNTERCLOCKWISE)
 # Rotate 180 degrees
 rotated_180 = cv2.rotate(image, cv2.ROTATE_180)
 
-# Display the rotated images (optional)
+
 cv2.imshow("Original Image", image)
 cv2.imshow("Rotated 90 Clockwise", rotated_90_clockwise)
 cv2.imshow("Rotated 90 Counter-Clockwise", rotated_90_counterclockwise)
