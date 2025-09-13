@@ -1,14 +1,23 @@
 # interface.py
 import os
-# Optional: force CPU if Metal causes trouble:  USE_CPU=1 python interface.py
-if os.environ.get("USE_CPU") == "1":
-    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # TF respects this on mac too
 
-# Quiet TF logs a bit
-os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "1")
-os.environ.setdefault("KERAS_BACKEND", "tensorflow")
+# Force CPU and disable GPU/Metal to prevent segfaults
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "1"
+os.environ["KERAS_BACKEND"] = "tensorflow"
+# Disable Metal on macOS to prevent segfaults
+os.environ["TF_METAL"] = "0"
+# Force CPU usage
+os.environ["TF_FORCE_GPU_ALLOW_GROWTH"] = "false"
 
 import tensorflow as tf
+# Explicitly set CPU only
+tf.config.set_visible_devices([], 'GPU')
+
+# Enable unsafe deserialization for Lambda layers
+import keras
+keras.config.enable_unsafe_deserialization()
+
 import numpy as np
 
 # Use a safe, headless plotting backend on macOS (prevents some segfaults)
@@ -20,14 +29,31 @@ from pathlib import Path
 
 DISTORTION_CLASSES = ["stretch", "compression", "sliding", "nonrigid", "curl"]
 
-# --- Load model (no compile needed for inference) ---
-# If you saved with Keras 3 / TF 2.16+, .keras format is even safer:
-# model = tf.keras.models.load_model("elastic_unet_conditional.keras", compile=False)
-model = tf.keras.models.load_model(
-    "elastic_unet_conditional.h5",
-    compile=False,          # <- important; avoids custom_objects & legacy optimizer state
-    safe_mode=False,        # okay since we created the model; no pickled lambdas required
+# --- Build model and load weights separately (avoids segfault) ---
+from model import build_unet
+
+print("Building model architecture...")
+model = build_unet(
+    input_shape=(256, 256, 1),
+    num_cond_classes=len(DISTORTION_CLASSES),
+    residual=True
 )
+
+print("Loading weights...")
+try:
+    with tf.device('/CPU:0'):
+        model.load_weights("elastic_unet_conditional.h5")
+    print("Model weights loaded successfully!")
+except Exception as e:
+    print(f"Error loading weights: {e}")
+    try:
+        # Try the other file
+        model.load_weights("elastic_unet_best.h5")
+        print("Loaded weights from best model!")
+    except Exception as e2:
+        print(f"Failed to load either model: {e2}")
+        import sys
+        sys.exit(1)
 
 # --- Preprocess input image ---
 def load_grayscale(path, size=(256, 256)):
@@ -69,11 +95,11 @@ def reconstruct(img_path, distortion_type):
 
     # Condition vector
     cond = get_condition_vector(distortion_type)  # [1,C]
+    cond = tf.constant(cond)  # Convert to tensor
 
-    # If Metal/GPUs misbehave, uncomment:
-    # with tf.device("/CPU:0"):
-    #     restored = model([img, cond], training=False)[0].numpy()
-    restored = model([img, cond], training=False)[0].numpy()   # [H,W,1] float32
+    # Force CPU inference to prevent segfaults
+    with tf.device("/CPU:0"):
+        restored = model([img, cond], training=False)[0].numpy()   # [H,W,1] float32
 
     # Convert to uint8 for saving
     restored_uint8 = tf.image.convert_image_dtype(restored, tf.uint8, saturate=True)
