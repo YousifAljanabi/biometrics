@@ -25,8 +25,11 @@ def _build_class_lookup(cond_map: dict[str, list[float]]):
 
     import numpy as np
     class_ids = []
+    num_classes = None
     for v in onehots:
         arr = np.array(v)
+        if num_classes is None:
+            num_classes = len(arr) if arr.ndim > 0 else 1
         if arr.ndim == 0:
             class_ids.append(int(arr))
         else:
@@ -36,7 +39,7 @@ def _build_class_lookup(cond_map: dict[str, list[float]]):
     vals = tf.constant(class_ids, dtype=tf.int32)
     init = tf.lookup.KeyValueTensorInitializer(keys, vals)
     default_val = tf.constant(0, dtype=tf.int32)  # scalar default
-    return tf.lookup.StaticHashTable(init, default_val), int(max(class_ids)) + 1
+    return tf.lookup.StaticHashTable(init, default_val), num_classes
 
 def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_remainder=True):
     fnames = tf.io.gfile.listdir(distorted_dir)
