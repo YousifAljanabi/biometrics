@@ -34,20 +34,25 @@ def load_grayscale(path, size=(256, 256)):
     path = str(path)
     img_bytes = tf.io.read_file(path)
     ext = Path(path).suffix.lower()
+
     if ext == ".bmp":
-        img = tf.io.decode_bmp(img_bytes, channels=1)
+        # BMP must be decoded as RGB
+        img = tf.io.decode_bmp(img_bytes, channels=3)
     elif ext == ".png":
         img = tf.io.decode_png(img_bytes, channels=1)
     elif ext in (".jpg", ".jpeg"):
         img = tf.io.decode_jpeg(img_bytes, channels=1)
     else:
-        # Fallback that auto-detects formats
         img = tf.io.decode_image(img_bytes, channels=1, expand_animations=False)
+
+    # Convert to grayscale if it’s RGB
+    if img.shape[-1] == 3:
+        img = tf.image.rgb_to_grayscale(img)
+
     img = tf.image.convert_image_dtype(img, tf.float32)  # [0,1]
     if size is not None:
         img = tf.image.resize(img, size, method="bilinear")
     return img  # [H,W,1] float32
-
 # --- Build one-hot condition ---
 def get_condition_vector(dist_type: str):
     if dist_type not in DISTORTION_CLASSES:
