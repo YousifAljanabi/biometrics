@@ -10,7 +10,7 @@ from distorter import (
 import time
 
 # Root paths
-input_folder = "/home/shanshal/Projects/Python/biometrics/image_processing/examples/DB1_B bmp"
+input_folder = "/home/shanshal/Projects/Python/biometrics/image_processing/examples/og_images bmp"
 output_root = "/home/shanshal/Projects/Python/biometrics/image_processing/distorted_db_labeled"
 distortions = {
     "radial": radial,
@@ -37,9 +37,8 @@ start = time.time()
 
 # Collect and slice .bmp files
 files = sorted([f for f in os.listdir(input_folder) if f.lower().endswith(".bmp")])
-half = len(files) // 2
+half = len(files) // 1
 files = files[:half]   # take only half
-
 for file in files:
     input_path = os.path.join(input_folder, file)
     base_name = os.path.splitext(file)[0]
