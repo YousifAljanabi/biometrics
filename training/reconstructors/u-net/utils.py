@@ -2,7 +2,10 @@ import os
 import numpy as np
 
 # Define your distortion classes (must match training order)
-DISTORTION_CLASSES = ["stretch", "compression", "sliding", "nonrigid", "curl"]
+DISTORTION_CLASSES = ["affine_warp", "compression_loss", "elastic", "gaussian_noise", "partial_loss",
+                      "perspective_warp", "radial", "ridge_erosion", "rotate", "salt_pepper_noise",
+                      "scale", "speckle_noise", "stretch", "translate"
+                      ]
 
 
 def build_cond_map(distorted_dir: str):
