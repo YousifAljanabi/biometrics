@@ -1,15 +1,8 @@
 from model import build_unet
 from pipeline import make_dataset
-
-import os
-os.environ["XLA_FLAGS"] = "--xla_gpu_strict_conv_algorithm_picker=false"
-
 import tensorflow as tf
 from utils import build_cond_map
-print(tf.__version__)
-gpus = tf.config.experimental.list_physical_devices('GPU')
-for gpu in gpus:
-    tf.config.experimental.set_memory_growth(gpu, True)
+
 
 def ssim_l1_loss(y_true, y_pred, alpha=0.84):
     # SSIM returns [-1,1]; convert to loss in [0,1]
