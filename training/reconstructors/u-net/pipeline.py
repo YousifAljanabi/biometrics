@@ -25,7 +25,8 @@ def _build_lookup(cond_map: dict[str, list[float]]):
     keys = tf.constant(list(cond_map.keys()), dtype=tf.string)
     vals = tf.constant(list(cond_map.values()), dtype=tf.float32)
     init = tf.lookup.KeyValueTensorInitializer(keys, vals)
-    default_val = tf.zeros_like(vals[0])
+    # default_val must have the same shape as table values
+    default_val = tf.zeros([len(next(iter(cond_map.values())))], dtype=tf.float32)
     return tf.lookup.StaticHashTable(init, default_val)
 
 def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_remainder=True):
