@@ -3,6 +3,10 @@ from pipeline import make_dataset
 import tensorflow as tf
 from utils import build_cond_map
 
+gpus = tf.config.experimental.list_physical_devices('GPU')
+for gpu in gpus:
+    tf.config.experimental.set_memory_growth(gpu, True)
+
 def ssim_l1_loss(y_true, y_pred, alpha=0.84):
     # SSIM returns [-1,1]; convert to loss in [0,1]
     ssim = tf.image.ssim(y_true, y_pred, max_val=1.0)
