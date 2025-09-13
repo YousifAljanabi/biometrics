@@ -18,8 +18,15 @@ def convert_tif_to_bmp(input_folder):
             output_path = os.path.join(output_folder, output_filename)
             with Image.open(input_path) as img:
                 img.save(output_path, "BMP")
+<<<<<<< HEAD
+convert_tif_to_bmp("/home/shanshal/Projects/Python/biometrics/image_processing/examples/DB1_B")
+convert_tif_to_bmp("/home/shanshal/Projects/Python/biometrics/image_processing/examples/DB2_B")
+convert_tif_to_bmp("/home/shanshal/Projects/Python/biometrics/image_processing/examples/DB3_B")
+convert_tif_to_bmp("/home/shanshal/Projects/Python/biometrics/image_processing/examples/DB4_B")
+=======
             print(f"Converted: {input_path} -> {output_path}")
 
     print(f"All .tif files converted. Saved in: {output_folder}")
 
 convert_tif_to_bmp("/home/shanshal/Projects/Python/biometrics/assets/DB2_B")
+>>>>>>> origin/main
