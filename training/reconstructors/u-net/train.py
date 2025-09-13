@@ -11,9 +11,11 @@ def ssim_l1_loss(y_true, y_pred, alpha=0.84):
     l1 = tf.reduce_mean(tf.abs(y_true - y_pred), axis=[1,2,3])
     return alpha * ssim_loss + (1.0 - alpha) * l1
 
-# Suppose you have 5 elastic classes:
-# order = ["stretch", "compression", "sliding", "nonrigid", "curl"]
-NUM_CLASSES = 5
+# Number of distortion classes - must match DISTORTION_CLASSES in utils.py
+# Current classes: ["affine_warp", "compression_loss", "elastic", "gaussian_noise", "partial_loss",
+#                  "perspective_warp", "radial", "ridge_erosion", "rotate", "salt_pepper_noise",
+#                  "scale", "speckle_noise", "stretch", "translate"]
+NUM_CLASSES = 14
 
 # Build mapping: filename -> onehot
 # Example: cond_map["0001.png"] = [1,0,0,0,0]  # stretch

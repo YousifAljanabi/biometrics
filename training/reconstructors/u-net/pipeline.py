@@ -6,12 +6,18 @@ BATCH = 4
 
 def load_pair(fname, distorted_dir, clean_dir):
     distorted_path = tf.strings.join([distorted_dir, "/", fname])
-    clean_fname = tf.strings.regex_replace(fname, r"^[a-zA-Z]+_", "")
+    # Remove distortion prefix from filename (e.g., "affine_warp_fingerprint..." -> "fingerprint...")
+    clean_fname = tf.strings.regex_replace(fname, r"^[a-zA-Z_]+_fingerprint", "fingerprint")
     clean_path = tf.strings.join([clean_dir, "/", clean_fname])
 
     def _load(p):
         img = tf.io.read_file(p)
-        img = tf.io.decode_png(img, channels=1)
+        # Try PNG first, then fallback to BMP for backward compatibility
+        img = tf.cond(
+            tf.strings.regex_full_match(p, r".*\.png"),
+            lambda: tf.io.decode_png(img, channels=1),
+            lambda: tf.io.decode_bmp(img, channels=1)
+        )
         img = tf.image.convert_image_dtype(img, tf.float32)
         img = tf.image.resize(img, IMG_SIZE, method="bilinear")
         return img
@@ -43,7 +49,16 @@ def _build_class_lookup(cond_map: dict[str, list[float]]):
 
 def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_remainder=True):
     fnames = tf.io.gfile.listdir(distorted_dir)
-    fnames = sorted([f for f in fnames if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp"))])
+    # Filter files to only include image formats, prioritize PNG over BMP
+    all_files = [f for f in fnames if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp"))]
+    
+    # If both PNG and BMP versions exist, prefer PNG
+    png_files = [f for f in all_files if f.lower().endswith(".png")]
+    if png_files:
+        fnames = sorted(png_files)
+    else:
+        fnames = sorted(all_files)
+    
     ds = tf.data.Dataset.from_tensor_slices(tf.constant(fnames))
 
     if cond_map is None:
