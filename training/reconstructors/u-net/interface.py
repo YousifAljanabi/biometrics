@@ -6,9 +6,11 @@ DISTORTION_CLASSES = ["stretch", "compression", "sliding", "nonrigid", "curl"]
 
 # --- Load model ---
 custom_objects = {"ssim_l1_loss": lambda y_true, y_pred: 0.0}  # placeholder if needed
-model = tf.keras.models.load_model("elastic_unet_conditional.h5",
-                                   custom_objects=custom_objects)
-
+model = tf.keras.models.load_model(
+    "elastic_unet_conditional.h5",
+    custom_objects={"ssim_l1_loss": lambda y_true, y_pred: 0.0},
+    safe_mode=False,  # allow lambda layers
+)
 # --- Preprocess input image ---
 def load_grayscale(path, size=(256, 256)):
     img = tf.io.read_file(path)
