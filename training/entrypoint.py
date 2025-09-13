@@ -2,7 +2,7 @@ import tensorflow as tf
 import os
 
 img_size = (256, 288)
-batch_size = 32
+batch_size = 4
 
 
 dataset_dir = os.path.join(os.path.dirname(__file__), "..", "dataset")
