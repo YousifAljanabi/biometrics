@@ -1,0 +1,1 @@
+a file to init the directory (for shanshal to give me some photos via git)
