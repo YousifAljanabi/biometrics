@@ -85,6 +85,23 @@ def ridge_erosion(input_path, output_path, severity=1, iterations=1):
     erosed_img = cv2.erode(img, kernel, iterations=iterations)
     cv2.imwrite(output_path, erosed_img)
 
+
+def partial_loss(input_path, output_path, patch_size=50):
+    """
+    Yeets a random rect from the image
+    """
+    img = cv2.imread(input_path)
+    h, w = img.shape[:2]
+
+    x = random.randint(0, w - patch_size)
+    y = random.randint(0, h - patch_size)
+
+    mask = np.ones_like(img) * 255
+    cv2.rectangle(mask, (x, y), (x+patch_size-1, y+patch_size-1), 0, -1)
+
+    erased_img = cv2.bitwise_and(img, mask)
+    cv2.imwrite(output_path, erased_img)
+
         
 def apply_random_distortions(input_folder, output_folder, samples_per_image):
     os.makedirs(output_folder, exist_ok=True)
