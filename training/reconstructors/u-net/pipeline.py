@@ -1,8 +1,8 @@
 # pipeline.py
 import tensorflow as tf
 
-IMG_SIZE = (256, 256)  # 4x faster training
-BATCH = 16  # Even faster with smaller images
+IMG_SIZE = (256, 256)
+BATCH = 64
 
 def load_pair(fname, distorted_dir, clean_dir):
     distorted_path = tf.strings.join([distorted_dir, "/", fname])

@@ -30,5 +30,5 @@ callbacks = [
 train_ds = make_dataset("data/distorted", "data/clean", cond_map=cond_map, shuffle=True)
 # val_ds   = make_dataset("data/distorted_val", "data/clean_val", cond_map=cond_map, shuffle=False)
 
-c_model.fit(train_ds, epochs=100, callbacks=callbacks)
+c_model.fit(train_ds, epochs=50, callbacks=callbacks)  # Reduced epochs for faster training
 c_model.save("elastic_unet_conditional.h5")
