@@ -15,8 +15,8 @@ def radial(input_path, output_path):
         img.save(filename=output_path)
 
 def stretch(input_path, output_path):
-    scale_x = random.uniform(0.8, 1.2)
-    scale_y = random.uniform(0.8, 1.2)
+    scale_x = random.uniform(0.9, 1.1)
+    scale_y = random.uniform(0.9, 1.1)
     with Image(filename=input_path) as img:
         img.resize(int(img.width * scale_x), int(img.height * scale_y))
         img.save(filename=output_path)
@@ -29,8 +29,7 @@ def rotate(input_path, output_path):
         img.save(filename=output_path)
 
 def translate(input_path, output_path, shift_x=None, shift_y=None):
-    with Image(filename=input_path) as img:
-        img = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
+    img = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE)
     if shift_x is None:
         shift_x = random.randint(-20, 20)
     if shift_y is None:
@@ -73,7 +72,6 @@ def perspective_warp(input_path, output_path):
         img.distort('perspective', tuple(args))
         img.save(filename=output_path)
 
-
 def ridge_erosion(input_path, output_path, severity=1, iterations=1):
     """
     1 is the lowest severity
@@ -83,7 +81,6 @@ def ridge_erosion(input_path, output_path, severity=1, iterations=1):
     kernel = np.ones((kernel_size, kernel_size), np.uint8)
     erosed_img = cv2.erode(img, kernel, iterations=iterations)
     cv2.imwrite(output_path, erosed_img)
-
 
 def partial_loss(input_path, output_path, patch_size=50):
     """
@@ -98,7 +95,7 @@ def partial_loss(input_path, output_path, patch_size=50):
     erased_img = cv2.bitwise_and(img, mask)
     cv2.imwrite(output_path, erased_img)
 
-def elastic(input_path, output_path, alpha = 0, sigma  = 0):
+def elastic(input_path, output_path, alpha=30, sigma=6):
     """
     alpha: how far pixels can move
     sigma: smoothness or curve of the actual deformation itself
@@ -107,26 +104,20 @@ def elastic(input_path, output_path, alpha = 0, sigma  = 0):
     random_state = np.random.RandomState(None)
     dx = random_state.rand(*img.shape) * 2 - 1
     dy = random_state.rand(*img.shape) * 2 - 1
-
-    # Just a filter don't freak out from gauss jumpscare
     dx = cv2.GaussianBlur(dx, (0, 0), sigma) * alpha
     dy = cv2.GaussianBlur(dy, (0, 0), sigma) * alpha
-
-    #setting up the grid
     x, y = np.meshgrid(np.arange(img.shape[1]), np.arange(img.shape[0]))
-
     map_x = (x + dx).astype(np.float32)
     map_y = (y + dy).astype(np.float32)
-
     deformed = cv2.remap(img, map_x, map_y,
-                     interpolation=cv2.INTER_LINEAR,
-                     borderMode=cv2.BORDER_REFLECT_101)
+                         interpolation=cv2.INTER_LINEAR,
+                         borderMode=cv2.BORDER_REFLECT_101)
     cv2.imwrite(output_path, deformed)
 
 def add_gaussian_noise(input_path, output_path, mean=0, std=10):
     """
-    mean: average of noise distrubtion
-    std: how strong the noise is default is 10
+    mean: average of noise distribution
+    std: how strong the noise is
     """
     img = cv2.imread(input_path, cv2.IMREAD_GRAYSCALE).astype(np.float32)
     noise = np.random.normal(mean, std, img.shape)
@@ -148,6 +139,7 @@ def add_salt_pepper_noise(input_path, output_path, amount=0.01):
         else:
             noisy[coords[0][i], coords[1][i]] = 255
     cv2.imwrite(output_path, noisy)
+
 def add_speckle_noise(input_path, output_path):
     """
     It's like a multiplicative gaussian?
@@ -157,9 +149,6 @@ def add_speckle_noise(input_path, output_path):
     noisy = img + img * noise * 0.1
     noisy = np.clip(noisy, 0, 255).astype(np.uint8)
     cv2.imwrite(output_path, noisy)
-
-import cv2
-import numpy as np
 
 def compression_loss(input_path, output_path, quality=30):
     """
@@ -172,13 +161,15 @@ def compression_loss(input_path, output_path, quality=30):
     decoded = cv2.imdecode(encoded, cv2.IMREAD_GRAYSCALE)
     cv2.imwrite(output_path, decoded)
 
-
-
-
-
 def apply_random_distortions(input_folder, output_folder, samples_per_image):
     os.makedirs(output_folder, exist_ok=True)
-    distortions = [radial, stretch, rotate, translate, scale, affine_warp, perspective_warp, ridge_erosion, partial_loss]
+    distortions = [
+        radial, stretch, rotate, translate, scale,
+        affine_warp, perspective_warp,
+        ridge_erosion, partial_loss, elastic,
+        add_gaussian_noise, add_salt_pepper_noise, add_speckle_noise,
+        compression_loss
+    ]
     for root, dirs, _ in os.walk(input_folder):
         if root == input_folder:
             for subdir in dirs:
