@@ -51,12 +51,11 @@ def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_rem
 
         def mapper(f):
             dist_img, clean_img = load_pair(f, distorted_dir, clean_dir)
-            cls_id = table.lookup(f)                                    # shape: ()
-            cond = tf.one_hot(cls_id, depth=num_classes, dtype=tf.float32)  # shape: (C,)
-            # Ensure static shapes for MPS
+            cls_id = table.lookup(f)  # scalar int32
+            cond = tf.one_hot(cls_id, depth=num_classes, dtype=tf.float32)  # shape (num_classes,)
             dist_img = tf.ensure_shape(dist_img, (*IMG_SIZE, 1))
             clean_img = tf.ensure_shape(clean_img, (*IMG_SIZE, 1))
-            cond = tf.ensure_shape(cond, (num_classes,))
+            cond = tf.ensure_shape(cond, (num_classes,))   # not (1,)
             return (dist_img, cond), clean_img
 
         ds = ds.map(mapper, num_parallel_calls=tf.data.AUTOTUNE)
