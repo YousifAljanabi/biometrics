@@ -28,15 +28,24 @@ distortions = {
     "speckle_noise": add_speckle_noise,
     "compression_loss": compression_loss,
 }
-start = time.time()
+
+# Ensure output directories
 for name in distortions.keys():
     os.makedirs(os.path.join(output_root, name), exist_ok=True)
-for file in os.listdir(input_folder):
-    if file.lower().endswith(".bmp"):
-        input_path = os.path.join(input_folder, file)
-        base_name = os.path.splitext(file)[0]
-        for name, fn in distortions.items():
-            output_path = os.path.join(output_root, name, f"{name}_{base_name}.bmp")
-            fn(input_path, output_path)
+
+start = time.time()
+
+# Collect and slice .bmp files
+files = sorted([f for f in os.listdir(input_folder) if f.lower().endswith(".bmp")])
+half = len(files) // 2
+files = files[:half]   # take only half
+
+for file in files:
+    input_path = os.path.join(input_folder, file)
+    base_name = os.path.splitext(file)[0]
+    for name, fn in distortions.items():
+        output_path = os.path.join(output_root, name, f"{name}_{base_name}.bmp")
+        fn(input_path, output_path)
+
 end = time.time()
 print(f"Process finished in {end - start:.2f} seconds")
