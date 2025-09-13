@@ -10,7 +10,7 @@ from distorter import (
 import time
 
 # Root paths
-input_folder = "/home/shanshal/Projects/Python/biometrics/image_processing/examples/og_images bmp"
+input_folder = "/home/shanshal/Projects/Python/biometrics/image_processing/examples/clean"
 output_root = "/home/shanshal/Projects/Python/biometrics/image_processing/distorted_db_labeled"
 distortions = {
     "radial": radial,
