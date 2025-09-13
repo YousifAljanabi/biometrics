@@ -19,17 +19,24 @@ def load_pair(fname, distorted_dir, clean_dir):
     return _load(distorted_path), _load(clean_path)
 
 def _build_class_lookup(cond_map: dict[str, list[float]]):
-    # Convert one-hot vectors to scalar class ids in Python
-    # If your cond_map values are already ints, just use them directly.
+    # convert each one-hot vector (list or np.ndarray) into a class id
     filenames = list(cond_map.keys())
     onehots = list(cond_map.values())
-    class_ids = [int(tf.argmax(v).numpy() if hasattr(v, "numpy") else (v.index(1) if 1 in v else 0))
-                 for v in onehots]
+
+    import numpy as np
+    class_ids = []
+    for v in onehots:
+        arr = np.array(v)
+        if arr.ndim == 0:
+            class_ids.append(int(arr))
+        else:
+            class_ids.append(int(arr.argmax()))
+
     keys = tf.constant(filenames, dtype=tf.string)
     vals = tf.constant(class_ids, dtype=tf.int32)
     init = tf.lookup.KeyValueTensorInitializer(keys, vals)
     default_val = tf.constant(0, dtype=tf.int32)  # scalar default
-    return tf.lookup.StaticHashTable(init, default_val), max(class_ids) + 1  # num_classes
+    return tf.lookup.StaticHashTable(init, default_val), int(max(class_ids)) + 1
 
 def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_remainder=True):
     fnames = tf.io.gfile.listdir(distorted_dir)
