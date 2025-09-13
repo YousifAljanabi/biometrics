@@ -1,5 +1,9 @@
 from model import build_unet
 from pipeline import make_dataset
+
+import os
+os.environ["XLA_FLAGS"] = "--xla_gpu_strict_conv_algorithm_picker=false"
+
 import tensorflow as tf
 from utils import build_cond_map
 
