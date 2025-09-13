@@ -2,7 +2,7 @@ import os
 import tensorflow as tf
 
 IMG_SIZE = (256, 256)
-BATCH = 8
+BATCH = 4
 
 def load_pair(fname, distorted_dir, clean_dir):
     distorted_path = tf.strings.join([distorted_dir, "/", fname])
