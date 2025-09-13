@@ -1,67 +1,101 @@
+# interface.py
+import os
+# Optional: force CPU if Metal causes trouble:  USE_CPU=1 python interface.py
+if os.environ.get("USE_CPU") == "1":
+    os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # TF respects this on mac too
+
+# Quiet TF logs a bit
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "1")
+os.environ.setdefault("KERAS_BACKEND", "tensorflow")
+
 import tensorflow as tf
 import numpy as np
+
+# Use a safe, headless plotting backend on macOS (prevents some segfaults)
+import matplotlib
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+
+from pathlib import Path
 
 DISTORTION_CLASSES = ["stretch", "compression", "sliding", "nonrigid", "curl"]
 
-# --- Load model ---
-custom_objects = {"ssim_l1_loss": lambda y_true, y_pred: 0.0}  # placeholder if needed
+# --- Load model (no compile needed for inference) ---
+# If you saved with Keras 3 / TF 2.16+, .keras format is even safer:
+# model = tf.keras.models.load_model("elastic_unet_conditional.keras", compile=False)
 model = tf.keras.models.load_model(
     "elastic_unet_conditional.h5",
-    custom_objects={"ssim_l1_loss": lambda y_true, y_pred: 0.0},
-    safe_mode=False,  # allow lambda layers
+    compile=False,          # <- important; avoids custom_objects & legacy optimizer state
+    safe_mode=False,        # okay since we created the model; no pickled lambdas required
 )
+
 # --- Preprocess input image ---
 def load_grayscale(path, size=(256, 256)):
-    img = tf.io.read_file(path)
-    img = tf.io.decode_png(img, channels=1)
+    path = str(path)
+    img_bytes = tf.io.read_file(path)
+    ext = Path(path).suffix.lower()
+    if ext == ".bmp":
+        img = tf.io.decode_bmp(img_bytes, channels=1)
+    elif ext == ".png":
+        img = tf.io.decode_png(img_bytes, channels=1)
+    elif ext in (".jpg", ".jpeg"):
+        img = tf.io.decode_jpeg(img_bytes, channels=1)
+    else:
+        # Fallback that auto-detects formats
+        img = tf.io.decode_image(img_bytes, channels=1, expand_animations=False)
     img = tf.image.convert_image_dtype(img, tf.float32)  # [0,1]
-    img = tf.image.resize(img, size)
-    return img
+    if size is not None:
+        img = tf.image.resize(img, size, method="bilinear")
+    return img  # [H,W,1] float32
 
 # --- Build one-hot condition ---
 def get_condition_vector(dist_type: str):
-    onehot = np.zeros((1, len(DISTORTION_CLASSES)), dtype=np.float32)
-    if dist_type in DISTORTION_CLASSES:
-        onehot[0, DISTORTION_CLASSES.index(dist_type)] = 1.0
-    else:
+    if dist_type not in DISTORTION_CLASSES:
         raise ValueError(f"Unknown distortion type: {dist_type}")
-    return onehot
+    onehot = np.zeros((1, len(DISTORTION_CLASSES)), dtype=np.float32)
+    onehot[0, DISTORTION_CLASSES.index(dist_type)] = 1.0
+    return onehot  # shape (1, C)
 
 # --- Inference ---
 def reconstruct(img_path, distortion_type):
     # Load & preprocess
-    img = load_grayscale(img_path)  # [H,W,1], float32 [0,1]
-    img = tf.expand_dims(img, 0)    # add batch dimension
+    img = load_grayscale(img_path)     # [H,W,1], float32 [0,1]
+    img = tf.expand_dims(img, 0)       # [1,H,W,1]
 
     # Condition vector
-    cond = get_condition_vector(distortion_type)
+    cond = get_condition_vector(distortion_type)  # [1,C]
 
-    # Run model
-    restored = model.predict([img, cond], verbose=0)[0]  # [H,W,1]
+    # If Metal/GPUs misbehave, uncomment:
+    # with tf.device("/CPU:0"):
+    #     restored = model([img, cond], training=False)[0].numpy()
+    restored = model([img, cond], training=False)[0].numpy()   # [H,W,1] float32
 
     # Convert to uint8 for saving
     restored_uint8 = tf.image.convert_image_dtype(restored, tf.uint8, saturate=True)
     return restored, restored_uint8
 
-# --- Example usage ---
-input_path = "sample_distorted.bmp"
-dist_type = "stretch"   # <-- known distortion from classifier or metadata
+if __name__ == "__main__":
+    input_path = "sample_distorted.bmp"   # now correctly decoded
+    dist_type = "stretch"
 
-restored, restored_uint8 = reconstruct(input_path, dist_type)
+    restored, restored_uint8 = reconstruct(input_path, dist_type)
 
-# Save result
-tf.io.write_file("restored_cond.png", tf.io.encode_png(restored_uint8))
+    # Save result
+    tf.io.write_file("restored_cond.png", tf.io.encode_png(restored_uint8))
 
-# Show result
-plt.subplot(1,2,1)
-plt.imshow(load_grayscale(input_path), cmap="gray")
-plt.title(f"Input ({dist_type})")
-plt.axis("off")
+    # Show result (headless backend saves a window-less figure)
+    plt.figure(figsize=(8,4))
+    plt.subplot(1,2,1)
+    plt.imshow(load_grayscale(input_path).numpy().squeeze(), cmap="gray")
+    plt.title(f"Input ({dist_type})")
+    plt.axis("off")
 
-plt.subplot(1,2,2)
-plt.imshow(restored[...,0], cmap="gray")
-plt.title("Reconstructed")
-plt.axis("off")
+    plt.subplot(1,2,2)
+    plt.imshow(restored.squeeze(), cmap="gray")
+    plt.title("Reconstructed")
+    plt.axis("off")
 
-plt.show()
+    # On Agg backend, this writes an image instead of opening a GUI window
+    plt.tight_layout()
+    plt.savefig("viz_compare.png", dpi=150)
+    # If you do want a GUI window and you're not headless, switch to the macOSX backend.
