@@ -8,16 +8,16 @@ def load_pair(fname, distorted_dir, clean_dir):
     # fname is relative path like "distortion_type/distortion_name_image_uuid_var01.png"
     distorted_path = tf.strings.join([distorted_dir, "/", fname])
 
-    # Extract clean image UUID from filename pattern: {distortion_name}_{image_uuid}_var{XX}.png
+    # Extract clean image UUID from filename pattern: {distortion_name}_{image_uuid}.png
     # First get just the filename without the folder part
     base_fname = tf.strings.split(fname, "/")[-1]
     # Remove the extension
     name_no_ext = tf.strings.regex_replace(base_fname, r"\.png$", "")
-    # Extract the UUID part by removing distortion prefix and variation suffix
-    # Pattern: distortion_name_UUID_varXX -> UUID
+    # Extract the UUID part by removing distortion prefix
+    # Pattern: distortion_name_UUID -> UUID
     parts = tf.strings.split(name_no_ext, "_")
-    # Take all parts except first (distortion) and last (varXX) then rejoin
-    uuid_parts = parts[1:-1]  # Skip first and last parts
+    # Take all parts except first (distortion prefix) and rejoin
+    uuid_parts = parts[1:]  # Skip first part (distortion name)
     clean_fname = tf.strings.reduce_join(uuid_parts, separator="_")
     clean_fname = tf.strings.join([clean_fname, ".png"])
     clean_path = tf.strings.join([clean_dir, "/", clean_fname])
