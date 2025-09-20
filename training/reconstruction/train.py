@@ -13,9 +13,11 @@ def ssim_l1_loss(y_true, y_pred, alpha=0.84):
 
 NUM_CLASSES = 14
 
-# Define dataset paths using absolute paths
-distorted_dir = os.path.abspath(os.path.join("..", "..", "dataset", "distorted"))
-clean_dir = os.path.abspath(os.path.join("..", "..", "dataset", "clean"))
+# Define dataset paths using absolute paths relative to script location
+script_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.dirname(os.path.dirname(script_dir))
+distorted_dir = os.path.join(project_root, "dataset", "distorted")
+clean_dir = os.path.join(project_root, "dataset", "clean")
 
 cond_map = build_cond_map(distorted_dir)
 
