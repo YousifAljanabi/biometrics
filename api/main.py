@@ -16,7 +16,7 @@ import logging
 
 from training.reconstruction.model_service import get_service
 from training.classification.model_service import get_classification_service
-from utils import convert_image_to_png, validate_image_data, get_image_info
+from converters import convert_image_to_png, validate_image_data, get_image_info
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)

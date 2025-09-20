@@ -65,7 +65,7 @@ def main():
     """Main training function."""
     # Configuration
     img_size = (256, 256)
-    batch_size = 32
+    batch_size = 16
     epochs = 50
     validation_split = 0.2
 

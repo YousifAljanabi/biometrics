@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras import layers, Model
-from .stn import SpatialTransformer
+from stn import SpatialTransformer
 
 def conv_block(x, filters, k=3):
     x = layers.Conv2D(filters, k, padding="same", activation=None)(x)

@@ -2,7 +2,7 @@
 import tensorflow as tf
 
 IMG_SIZE = (256, 256)
-BATCH = 64
+BATCH = 16
 
 def load_pair(fname, distorted_dir, clean_dir):
     # fname is relative path like "distortion_type/distortion_name_image_uuid_var01.png"
