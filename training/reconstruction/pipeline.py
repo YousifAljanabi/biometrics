@@ -19,17 +19,19 @@ def load_pair(fname, distorted_dir, clean_dir):
 
     def extract_with_var():
         # Pattern: distortion_name_UUID_varXX -> UUID
-        parts = tf.strings.split(name_no_ext, "_")
-        # Take all parts except first (distortion) and last (varXX)
-        uuid_parts = parts[1:-1]
-        return tf.strings.reduce_join(uuid_parts, separator="_")
+        # Extract UUID using regex pattern matching
+        without_var = tf.strings.regex_replace(name_no_ext, r"_var\d+$", "")
+        # UUID pattern: 8-4-4-4-12 hex digits
+        uuid_pattern = r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"
+        matches = tf.strings.regex_replace(without_var, r".*(" + uuid_pattern[1:-1] + ").*", r"\1")
+        return matches
 
     def extract_without_var():
         # Pattern: distortion_name_UUID -> UUID
-        parts = tf.strings.split(name_no_ext, "_")
-        # Take all parts except first (distortion prefix)
-        uuid_parts = parts[1:]
-        return tf.strings.reduce_join(uuid_parts, separator="_")
+        # UUID pattern: 8-4-4-4-12 hex digits
+        uuid_pattern = r"([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})"
+        matches = tf.strings.regex_replace(name_no_ext, r".*(" + uuid_pattern[1:-1] + ").*", r"\1")
+        return matches
 
     clean_fname_base = tf.cond(has_var_suffix, extract_with_var, extract_without_var)
     clean_fname = tf.strings.join([clean_fname_base, ".png"])
