@@ -1,10 +1,9 @@
 # normal.py
-# Distortion restoration + skeletonization (clean version)
+# Distortion restoration + dynamic enhancement + skeletonization (clean version, no ML)
 
 from __future__ import annotations
 import cv2
 import numpy as np
-from typing import Tuple
 
 # ----------------------------
 # Distortion type groups
@@ -76,10 +75,22 @@ def correct_occlusion(img: np.ndarray) -> np.ndarray:
     return pad_to_square(to_gray(img), 512)
 
 # ----------------------------
-# Enhancement + Skeletonization
+# Enhancement helpers
 # ----------------------------
 def normalize(img: np.ndarray) -> np.ndarray:
     return cv2.normalize(img, None, 0, 255, cv2.NORM_MINMAX)
+
+def enhance_contrast(img: np.ndarray) -> np.ndarray:
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
+    return clahe.apply(img)
+
+def sharpen(img: np.ndarray) -> np.ndarray:
+    blur = cv2.GaussianBlur(img, (0, 0), 1.0)
+    return cv2.addWeighted(img, 1.5, blur, -0.5, 0)
+
+def morph_cleanup(img: np.ndarray) -> np.ndarray:
+    kernel = np.ones((3, 3), np.uint8)
+    return cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
 
 def thinning(img: np.ndarray) -> np.ndarray:
     if hasattr(cv2, "ximgproc") and hasattr(cv2.ximgproc, "thinning"):
@@ -88,7 +99,7 @@ def thinning(img: np.ndarray) -> np.ndarray:
         return img
 
 # ----------------------------
-# Router + Full Pipeline
+# Router + Dynamic Enhancement
 # ----------------------------
 def route_and_restore(img: np.ndarray, distortion_type: str) -> np.ndarray:
     dt = (distortion_type or "unknown").lower()
@@ -107,13 +118,42 @@ def route_and_restore(img: np.ndarray, distortion_type: str) -> np.ndarray:
         restored = pad_to_square(to_gray(img), 512)
     return restored
 
+def dynamic_enhance(img: np.ndarray, distortion_type: str) -> np.ndarray:
+    dt = distortion_type.lower()
+    g = to_gray(img)
+
+    if dt in DIST_TYPES["noise"]:
+        g = enhance_contrast(g)
+        g = sharpen(g)
+        g = morph_cleanup(g)
+
+    elif dt in DIST_TYPES["elastic"]:
+        g = sharpen(g)
+
+    elif dt in DIST_TYPES["occlusion"]:
+        g = enhance_contrast(g)
+        g = morph_cleanup(g)
+
+    return g
+
+# ----------------------------
+# Main Pipeline
+# ----------------------------
+def segment(img: np.ndarray) -> np.ndarray:
+    g = to_gray(img)
+    g = cv2.GaussianBlur(g, (5, 5), 0)
+    _, mask = cv2.threshold(g, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    return mask
+
 def full_pipeline(img: np.ndarray, distortion_type: str):
     restored = route_and_restore(img, distortion_type)
-    norm = normalize(restored)
-    _, bin_img = cv2.threshold(norm, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-    skel = thinning(bin_img)
+    enhanced = dynamic_enhance(restored, distortion_type)
+    norm = normalize(enhanced)
+    ridge = segment(norm)
+    skel = thinning(ridge)
     return {
         "restored": restored,
+        "ridge": ridge,
         "skeleton": skel
     }
 
@@ -121,19 +161,29 @@ def full_pipeline(img: np.ndarray, distortion_type: str):
 # CLI
 # ----------------------------
 if __name__ == "__main__":
-    import argparse, os
+    import argparse, os, sys
     ap = argparse.ArgumentParser()
     ap.add_argument("--input", required=True, help="Path to fingerprint image")
     ap.add_argument("--type", required=True, help="Distortion type label")
-    ap.add_argument("--outdir", default="out_skeleton", help="Output directory")
+    ap.add_argument("--outdir", default="out_step", help="Output directory")
     args = ap.parse_args()
 
     os.makedirs(args.outdir, exist_ok=True)
     img = cv2.imread(args.input, cv2.IMREAD_UNCHANGED)
+    if img is None:
+        raise FileNotFoundError(f"Could not read input image: {args.input}")
+
     outputs = full_pipeline(img, args.type)
 
-    stem = os.path.splitext(os.path.basename(args.input))[0]
-    cv2.imwrite(os.path.join(args.outdir, f"{stem}_{args.type}_restored.png"), outputs["restored"])
-    cv2.imwrite(os.path.join(args.outdir, f"{stem}_{args.type}_skeleton.png"), outputs["skeleton"])
+    def _safe_imwrite(path: str, img: np.ndarray) -> None:
+        ok = cv2.imwrite(path, img)
+        if not ok:
+            print(f"[ERROR] Failed to write file: {path}")
+            sys.exit(1)
 
-    print(f"Saved outputs in {args.outdir}")
+    stem = os.path.splitext(os.path.basename(args.input))[0]
+    _safe_imwrite(os.path.join(args.outdir, f"{stem}_{args.type}_restored.png"), outputs["restored"])
+    _safe_imwrite(os.path.join(args.outdir, f"{stem}_{args.type}_ridge.png"), outputs["ridge"])
+    _safe_imwrite(os.path.join(args.outdir, f"{stem}_{args.type}_skeleton.png"), outputs["skeleton"])
+
+    print(f"Saved outputs in {os.path.abspath(args.outdir)}")
