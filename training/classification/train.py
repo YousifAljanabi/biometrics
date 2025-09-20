@@ -136,7 +136,7 @@ def main():
     model.compile(
         optimizer=tf.keras.optimizers.Adam(learning_rate=1e-3),
         loss='categorical_crossentropy',
-        metrics=['accuracy', 'top_3_accuracy']
+        metrics=['accuracy', tf.keras.metrics.TopKCategoricalAccuracy(k=3)]
     )
 
     # Print model summary
