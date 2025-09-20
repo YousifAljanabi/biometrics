@@ -59,7 +59,7 @@ def make_dataset(distorted_dir, clean_dir, cond_map=None, shuffle=True, drop_rem
 
     # List all distortion type folders
     for distortion_folder in tf.io.gfile.listdir(distorted_dir):
-        distortion_path = tf.io.gfile.join([distorted_dir, distortion_folder])
+        distortion_path = tf.io.gfile.join(distorted_dir, distortion_folder)
         if tf.io.gfile.isdir(distortion_path):
             # List files in this distortion folder
             folder_files = tf.io.gfile.listdir(distortion_path)
