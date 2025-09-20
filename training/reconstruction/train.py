@@ -2,6 +2,7 @@ from model import build_unet
 from pipeline import make_dataset
 import tensorflow as tf
 from utils import build_cond_map
+import os
 
 
 def ssim_l1_loss(y_true, y_pred, alpha=0.84):
@@ -12,7 +13,11 @@ def ssim_l1_loss(y_true, y_pred, alpha=0.84):
 
 NUM_CLASSES = 14
 
-cond_map = build_cond_map("../../dataset/distorted")
+# Define dataset paths using absolute paths
+distorted_dir = os.path.abspath(os.path.join("..", "..", "dataset", "distorted"))
+clean_dir = os.path.abspath(os.path.join("..", "..", "dataset", "clean"))
+
+cond_map = build_cond_map(distorted_dir)
 
 c_model = build_unet(input_shape=(256,256,1), num_cond_classes=NUM_CLASSES, residual=True, use_stn=True)
 c_model.compile(optimizer=tf.keras.optimizers.Adam(1e-4),
@@ -27,8 +32,8 @@ callbacks = [
 ]
 
 
-train_ds = make_dataset("../../dataset/distorted", "../../dataset/clean", cond_map=cond_map, shuffle=True)
-val_ds   = make_dataset("../../dataset/distorted", "../../dataset/clean", cond_map=cond_map, shuffle=False)
+train_ds = make_dataset(distorted_dir, clean_dir, cond_map=cond_map, shuffle=True)
+val_ds   = make_dataset(distorted_dir, clean_dir, cond_map=cond_map, shuffle=False)
 
 c_model.fit(train_ds, epochs=50, callbacks=callbacks)  # Reduced epochs for faster training
 c_model.save("elastic_unet_conditional.h5")
