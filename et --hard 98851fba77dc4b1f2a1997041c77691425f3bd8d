@@ -1,0 +1,261 @@
+[33mcommit 98851fba77dc4b1f2a1997041c77691425f3bd8d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mshanshal/dev[m[33m, [m[1;31morigin/shanshal/dev[m[33m)[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 20 14:50:06 2025 +0300
+
+    Over here yousif
+
+[33mcommit 356003e51251d7e9d15d749a9513c539c971e1f7[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 20 14:18:36 2025 +0300
+
+    before the fallout
+
+[33mcommit 864d16e55ee8e171857266991191cd9d6db636d3[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 19 01:34:01 2025 +0300
+
+    add normal.py
+
+[33mcommit b8e7c2ce78336746d0b06ab5f9e23c3cb298f7cb[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Wed Sep 17 19:18:29 2025 +0300
+
+    upload dataset
+
+[33mcommit ff61f5962ead2e8e6127c51e2354e5256a645caa[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 18:01:35 2025 +0300
+
+    Refactor `preprocessing.py`
+
+[33mcommit 13364cd4e9339b15a26aff169b2a1bdb3890b3e3[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 13:20:35 2025 +0300
+
+    Refactored distorters and added personal ds
+
+[33mcommit f0f06c8abc7444efe9b55433a6a471f8cc8689bc[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 11:58:37 2025 +0300
+
+    update ds
+
+[33mcommit 149297ecdcf6407388235bf232e6cd5cce2fc770[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 05:52:37 2025 +0300
+
+    A shit ton of files we NEED to get them somewhere else
+
+[33mcommit f9053a1a6c928ae269f209fab60ea70c36bcdf4b[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:41:06 2025 +0300
+
+    Removed old files, Updated resize image
+
+[33mcommit 597ede0f88ffbe7357bb2d7436540bfdff58b26f[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 867329b b9b88ba
+Author: Ahmed Mahdi Shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:32:23 2025 +0300
+
+    Merge pull request #5 from YousifAljanabi/shanshal/dev
+    
+    remove old distorter dir
+
+[33mcommit b9b88ba5056046f6935af0fff20c7b6769469c13[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:30:10 2025 +0300
+
+    remove old distorter dir
+
+[33mcommit 867329b44e2d1193a9534683ad0111d53493d459[m
+Merge: ade7a34 e609c94
+Author: Ahmed Mahdi Shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:29:24 2025 +0300
+
+    Merge pull request #4 from YousifAljanabi/shanshal/dev
+    
+    Shanshal/dev
+
+[33mcommit e609c94b1442cf4be627da46e6aeb299ca350f11[m
+Merge: 5466cd6 ade7a34
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:22:47 2025 +0300
+
+    Last changes??
+
+[33mcommit 5466cd6b45c5f595d0cb2147f4d9f47602f25273[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 04:07:32 2025 +0300
+
+    Add normalizition
+
+[33mcommit 8661ecade02cbb87fb72687ada877ab1d1e27911[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 03:40:42 2025 +0300
+
+    Fix distorter
+
+[33mcommit c22daf9ebb18b3f009a93856b9376d538150d383[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 03:39:04 2025 +0300
+
+    Add noise
+
+[33mcommit f7345c0b7348439ee5c09753586dafb14f997380[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 03:03:33 2025 +0300
+
+    Add partial_loss
+
+[33mcommit a06805fdeaf833daa336c476ef057bbade7a6858[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Sat Sep 13 02:49:22 2025 +0300
+
+    Add ridge_erosion
+
+[33mcommit 3f526e084fd3dd91efac67436bffa8b0a828452c[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 23:19:30 2025 +0300
+
+    Added all 4 example dbs in tiff format ranging in difficulity from 1-4
+
+[33mcommit 0b1d105faf676e037bb69c9588be6ec6eb2d7069[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 23:18:16 2025 +0300
+
+    Deleted old assets
+
+[33mcommit e2101803ba662079de19f3c16a0948c93fdd530b[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 22:48:51 2025 +0300
+
+    Moved all functions to `utils/distorter.py`
+
+[33mcommit 621a558c964f5c1162537e8ab79c7b86f0e0ca11[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 21:39:42 2025 +0300
+
+    Add `radial.py`
+
+[33mcommit ade7a34c4e60e4939ddcc4a1503f50e08313a6d9[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 20:27:39 2025 +0300
+
+    Moved dir to test
+
+[33mcommit d554b63473fca30a3f853b5418304114b7154ff1[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 20:25:07 2025 +0300
+
+    Add tif to bmp
+
+[33mcommit 40cb09a33fa4f7969a3cc170bbb46415aa37c81e[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 18:04:13 2025 +0300
+
+    Add stretch and init non_rigid.py
+
+[33mcommit 3a704f2f3063ab82717c92fb383ed658af35786e[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 20:25:07 2025 +0300
+
+    Add tif to bmp
+
+[33mcommit d0256aa955a78fbae974e3bd30ef791e69987b8c[m
+Author: YousifAljanabi <yosif.ph2003@gmail.com>
+Date:   Fri Sep 12 20:22:13 2025 +0300
+
+    init test_in directory
+
+[33mcommit 548e643b6182039a8186cee084c5edc5758010c8[m
+Merge: fe4a486 867de20
+Author: Yousif Alaa <42554475+YousifAljanabi@users.noreply.github.com>
+Date:   Fri Sep 12 20:05:43 2025 +0300
+
+    Merge pull request #3 from YousifAljanabi/shanshal/dev
+    
+    Shanshal/dev
+
+[33mcommit e19c21522c9d5f97cd70f5fc6db9eb969b02029e[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 18:04:13 2025 +0300
+
+    Add stretch and init non_rigid.py
+
+[33mcommit 867de20f569dcf7549531910eafec16db0c35717[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 17:30:32 2025 +0300
+
+    Remove comment blocks
+
+[33mcommit 3538cd534ff21cfbd2242e92dc0f758815271ea4[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 17:27:50 2025 +0300
+
+    Add `distorter/translate`
+
+[33mcommit bfd0bc7159c6f49c03dfd3b03b919b3fb275b1dd[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 17:21:47 2025 +0300
+
+    Add `distorter/rotate.py`
+
+[33mcommit 45a45994ed927167e57fd7b34edc929637f05508[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 17:16:33 2025 +0300
+
+    Remove cleaner fns and add `distorter/scale.py`
+
+[33mcommit aee7e8325219854e62388b36ea00ad424cca619a[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 16:46:48 2025 +0300
+
+    Add `cleaner/persp_warp.py`
+
+[33mcommit fe4a486b7c4e3e74b45b44be0249447359ef6942[m
+Merge: c060f88 c6a0270
+Author: Yousif Alaa <42554475+YousifAljanabi@users.noreply.github.com>
+Date:   Fri Sep 12 15:47:37 2025 +0300
+
+    Merge pull request #2 from YousifAljanabi/yousif/dev
+    
+    Model training logic
+
+[33mcommit c6a02704a157fcc13f8246378f5114747e43fdce[m
+Author: YousifAljanabi <yosif.ph2003@gmail.com>
+Date:   Fri Sep 12 15:47:04 2025 +0300
+
+    Model training logic
+
+[33mcommit 754d3e0e744c5c240bc9dd47b81cec507dd0ed92[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 14:53:49 2025 +0300
+
+    Init cleaner file
+
+[33mcommit 91d4e215db595946dd3820e32a2e8fc104fc7e91[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 14:52:46 2025 +0300
+
+    Add `distorter/persp_warp.py`
+
+[33mcommit c060f8843bc7fa61255bf184ab6b22395afebbbb[m
+Merge: e037b89 3eaf58a
+Author: Yousif Alaa <42554475+YousifAljanabi@users.noreply.github.com>
+Date:   Fri Sep 12 14:51:41 2025 +0300
+
+    Merge pull request #1 from YousifAljanabi/shanshal/dev
+    
+    Init Image processing folder, Add distorter/affine_warp and cleaner/a…
+
+[33mcommit 3eaf58ab9c8f97c58ae78bb9d3964b0f65abe56a[m
+Author: shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 14:40:41 2025 +0300
+
+    Init Image processing folder, Add distorter/affine_warp and cleaner/affine_warp
+
+[33mcommit e037b89f631d495b39de166c467dab69a86fe809[m[33m ([m[1;31morigin/yousif/dev[m[33m, [m[1;31morigin/prod[m[33m, [m[1;31morigin/dev[m[33m)[m
+Author: Ahmed Mahdi Shanshal <ahmedmahdii2003@gmail.com>
+Date:   Fri Sep 12 12:33:24 2025 +0300
+
+    Create .gitignore
